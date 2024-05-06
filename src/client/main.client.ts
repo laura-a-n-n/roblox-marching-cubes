@@ -1,3 +1,3 @@
-import { makeHello } from "shared/module";
+import { getUVCoords } from "shared/rays";
 
-print(makeHello("main.client.ts"));
+print(getUVCoords(6, 6));
