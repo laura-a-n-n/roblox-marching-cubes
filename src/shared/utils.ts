@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 export const range = (size: number, start = 0) => new Array<number>(size, 0).map((_, index) => start + index);
 
 export const concat = <T extends defined>(...arrays: T[][]): T[] => {
@@ -25,7 +24,7 @@ export function slice<T extends defined[]>(tbl: T, start?: number, stop?: number
 	return newTbl;
 }
 
-export function cartesianProduct(...arrays: any[][]): any[][] {
+export function flatCartesianProduct<T>(...arrays: T[][]) {
 	// Base case: if no arrays provided, return empty array
 	if (arrays.size() === 0) {
 		return [[]];
@@ -34,10 +33,10 @@ export function cartesianProduct(...arrays: any[][]): any[][] {
 	// Recursive case: compute Cartesian product of arrays recursively
 	const head = arrays[0];
 	const tail = slice(arrays, 1);
-	const partialProduct = cartesianProduct(...tail);
+	const partialProduct = flatCartesianProduct(...tail);
 
 	// Compute Cartesian product
-	const result: any[][] = [];
+	const result: T[][] = [];
 	for (const item of head) {
 		for (const partial of partialProduct) {
 			result.push([item, ...partial]);
