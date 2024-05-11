@@ -11,7 +11,7 @@ export default class MarchedMesh {
 	public meshPart: MeshPart;
 	public triangles: Triangle[] = [];
 	public vertices: Vector3[] = [];
-	private editableMesh: EditableMesh;
+	public editableMesh: EditableMesh;
 
 	constructor(
 		public pointCloud: PointCloud,
@@ -103,7 +103,7 @@ export default class MarchedMesh {
 		// const latticePoint = this.vertexIndexToCubeSpace(i);
 		// const samplePoint = sdf.getSamplePoint(latticePoint, Vector3.one.mul(resolution));
 		// print(this.pointCloud.sdf.getVertexGrid().size(), i);
-		return this.pointCloud.sdf.getVertexGrid()[i];
+		return this.pointCloud.sdf!.getVertexGrid()[i];
 	}
 
 	private _vertexIndexToCubeSpace(i: number) {
@@ -141,7 +141,7 @@ export default class MarchedMesh {
 					const i1 = i + this.getGlobalCubeIndexFromVector3(this.getVector3FromLocalCubeIndex(v1));
 
 					const t = inverseLerp(
-						this.pointCloud.sdf.getLastTolerance(),
+						this.pointCloud.sdf!.getLastTolerance(),
 						this.pointCloud.marchableGrid[i0].float,
 						this.pointCloud.marchableGrid[i1].float,
 					);

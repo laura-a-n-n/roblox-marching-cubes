@@ -1,4 +1,6 @@
+import { parentRandomColors } from "shared/editable-image";
 import MarchedMesh from "shared/marched-mesh";
+import SimpleUVSplatter from "shared/naive-uv-splatter";
 import { PointCloud } from "shared/point-cloud";
 import { getSimpleRays, getUVCoords, renderRaysDebug } from "shared/rays";
 import { SignedDistanceFunction } from "shared/sdf";
@@ -35,3 +37,6 @@ const marchedMesh = new MarchedMesh(pointCloud);
 // pointCloud.render();
 pointCloud.sampleGrid();
 marchedMesh.render();
+// SimpleUVSplatter.simpleRotationTest();
+SimpleUVSplatter.splatMesh(marchedMesh.editableMesh);
+parentRandomColors(marchedMesh.meshPart);

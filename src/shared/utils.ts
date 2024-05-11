@@ -50,3 +50,7 @@ export function inverseLerp(value: number, a: number, b: number) {
 	const denom = b - a;
 	return (value - a) / denom;
 }
+
+export function projectXY(v: Vector3): Vector2 {
+	return new Vector2(v.X, v.Y);
+}

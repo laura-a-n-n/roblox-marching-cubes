@@ -4,13 +4,13 @@ export class PointCloud {
 	public model: Model;
 	public points: Vector3[] = [];
 	public marchableGrid: { binary: 0 | 1; float: number }[] = [];
-	private resolution = 64;
+	private resolution = 32;
 	private scale = 32;
 	private atomColor: BrickColor = new BrickColor("Really black");
 	private atomTransparency = 0;
 
 	constructor(
-		public sdf: SignedDistanceFunction,
+		public sdf?: SignedDistanceFunction,
 		model?: Model,
 	) {
 		if (!model) {
@@ -43,6 +43,9 @@ export class PointCloud {
 	}
 
 	public sampleGrid(resolution = this.resolution, scale = this.scale) {
+		if (!this.sdf) {
+			throw error("SDF needs to be defined to use sampleGrid");
+		}
 		const points = this.sdf.sampleGrid(Vector3.one.mul(resolution));
 		this.points = points;
 		this.marchableGrid = this.sdf.getMarchableGrid();
