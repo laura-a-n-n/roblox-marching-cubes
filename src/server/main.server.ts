@@ -11,4 +11,5 @@ const sdf = new SignedDistanceFunction((v: Vector3) => v.Magnitude - 0.5);
 const pointCloud = new PointCloud(sdf);
 const marchedMesh = new MarchedMesh(pointCloud);
 pointCloud.sampleGrid();
+// pointCloud.render();
 marchedMesh.render();

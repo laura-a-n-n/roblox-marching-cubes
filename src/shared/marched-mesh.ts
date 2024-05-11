@@ -148,8 +148,8 @@ export default class MarchedMesh {
 					vertexIds[mapIndex] = this.editableMesh.AddVertex(vertex.mul(this.pointCloud.getScale()));
 					vertices[mapIndex] = vertex;
 				});
-				this.triangles.push(vertices);
-				this.vertices.push(vertices[0], vertices[1], vertices[2]);
+				// this.triangles.push(vertices);
+				// this.vertices.push(vertices[0], vertices[1], vertices[2]);
 				this.editableMesh.AddTriangle(...vertexIds);
 			}
 		}
@@ -162,8 +162,8 @@ export default class MarchedMesh {
 			// const pointCloud = new PointCloud(this.pointCloud.sdf);
 			// pointCloud.setAtomColor(new BrickColor("Hot pink"));
 			// pointCloud.setAtomTransparency(0.9);
-			// pointCloud.setPoints(this.pointCloud.sdf.getVertexGrid());
-			// pointCloud.setScale(16);
+			// pointCloud.setPoints(this.vertices); //this.pointCloud.sdf.getVertexGrid());
+			// pointCloud.setScale(this.pointCloud.getScale());
 			// pointCloud.drawAtoms();
 			// pointCloud.render();
 			// this.pointCloud.setPoints(this.vertices);
