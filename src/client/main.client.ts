@@ -31,7 +31,7 @@ function sdOctahedron(p: Vector3, s: number): number {
 }
 const octahedronPrefab = (p: Vector3) => sdOctahedron(p, 0.5);
 
-const sdf = new SignedDistanceFunction(octahedronPrefab);
+const sdf = new SignedDistanceFunction(torusPrefab);
 const pointCloud = new PointCloud(sdf);
 const marchedMesh = new MarchedMesh(pointCloud);
 // pointCloud.render();
