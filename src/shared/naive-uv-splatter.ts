@@ -15,6 +15,7 @@ export default class SimpleUVSplatter {
 		const triangleData = new Map<number, Map<number, Vector2>>();
 		let totalWidth = 0;
 		let totalHeight = 0; // unused as of now.
+		let maxHeight = 0;
 
 		for (const triangleId of triangles) {
 			const [v0, v1, v2] = mesh.GetTriangleVertices(triangleId);
@@ -43,7 +44,7 @@ export default class SimpleUVSplatter {
 			const height = maxY - minY;
 
 			// Now localize each of the triangle's vertices to this box
-			const translation = Vector2.xAxis.mul(totalWidth);
+			const translation = new Vector2(totalWidth, totalHeight);
 			triangleData.set(
 				triangleId,
 				new Map([
@@ -55,15 +56,16 @@ export default class SimpleUVSplatter {
 
 			totalWidth += width;
 			totalHeight += height;
+			maxHeight = math.max(height, maxHeight);
 		}
 
 		// Now we can set the UVs on this pass!
 		for (const triangleId of triangles) {
 			const [v0, v1, v2] = mesh.GetTriangleVertices(triangleId);
 			const data = triangleData.get(triangleId)!;
-			mesh.SetUV(v0, data.get(v0)!.div(totalWidth));
-			mesh.SetUV(v1, data.get(v1)!.div(totalWidth));
-			mesh.SetUV(v2, data.get(v2)!.div(totalWidth));
+			mesh.SetUV(v0, data.get(v0)!.div(new Vector2(totalWidth, totalHeight)));
+			mesh.SetUV(v1, data.get(v1)!.div(new Vector2(totalWidth, totalHeight)));
+			mesh.SetUV(v2, data.get(v2)!.div(new Vector2(totalWidth, totalHeight)));
 		}
 	}
 
