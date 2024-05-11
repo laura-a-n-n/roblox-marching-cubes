@@ -3,9 +3,9 @@ import { SignedDistanceFunction } from "shared/sdf";
 export class PointCloud {
 	public model: Model;
 	public points: Vector3[] = [];
-	public marchableGrid: (0 | 1)[] = [];
+	public marchableGrid: { binary: 0 | 1; float: number }[] = [];
 	private resolution = 64;
-	private scale = 16;
+	private scale = 32;
 	private atomColor: BrickColor = new BrickColor("Really black");
 	private atomTransparency = 0;
 
@@ -42,7 +42,7 @@ export class PointCloud {
 		}
 	}
 
-	public sampleGrid(resolution = this.resolution, scale = 8) {
+	public sampleGrid(resolution = this.resolution, scale = this.scale) {
 		const points = this.sdf.sampleGrid(Vector3.one.mul(resolution));
 		this.points = points;
 		this.marchableGrid = this.sdf.getMarchableGrid();

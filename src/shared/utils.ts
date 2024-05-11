@@ -45,3 +45,8 @@ export function flatCartesianProduct<T>(...arrays: T[][]) {
 
 	return result;
 }
+
+export function inverseLerp(value: number, a: number, b: number) {
+	const denom = b - a;
+	return (value - a) / denom;
+}

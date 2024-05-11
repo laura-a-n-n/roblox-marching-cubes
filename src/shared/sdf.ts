@@ -2,8 +2,9 @@ export type SDFDefinition = (vector: Vector3) => number;
 
 export class SignedDistanceFunction {
 	public forward: SDFDefinition;
-	private marchableGrid: (0 | 1)[] = [];
+	private marchableGrid: { binary: 0 | 1; float: number }[] = [];
 	private vertexGrid: Vector3[] = [];
+	private lastTolerance = 0.03;
 
 	public constructor(definition: SDFDefinition, meshPart?: MeshPart) {
 		this.forward = definition;
@@ -46,6 +47,10 @@ export class SignedDistanceFunction {
 		return leftBottomBack.add(latticePoint.div(resolution.sub(Vector3.one)).mul(rightTopFront.sub(leftBottomBack)));
 	}
 
+	getLastTolerance() {
+		return this.lastTolerance;
+	}
+
 	public sampleGrid(
 		resolution: Vector3,
 		tolerance = 0.03,
@@ -59,6 +64,7 @@ export class SignedDistanceFunction {
 		const gridSamples: Vector3[] = [];
 		this.marchableGrid = [];
 		this.vertexGrid = [];
+		this.lastTolerance = tolerance;
 
 		for (let x = 0; x < resolution.X; x++) {
 			for (let y = 0; y < resolution.Y; y++) {
@@ -71,7 +77,7 @@ export class SignedDistanceFunction {
 						gridSamples.push(samplePoint);
 					}
 					this.vertexGrid.push(samplePoint);
-					this.marchableGrid.push(converged ? 1 : 0);
+					this.marchableGrid.push({ binary: converged ? 1 : 0, float: distance });
 				}
 			}
 		}

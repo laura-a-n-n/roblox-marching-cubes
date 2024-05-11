@@ -1,5 +1,6 @@
 import { EDGE_VERTEX_INDICES, TRIANGLE_TABLE } from "shared/marching-cubes";
 import { PointCloud } from "shared/point-cloud";
+import { inverseLerp } from "shared/utils";
 
 export type Triangle = [Vector3, Vector3, Vector3];
 export type TriangleIndices = [number, number, number];
@@ -73,7 +74,7 @@ export default class MarchedMesh {
 	}
 
 	getCubeFromIndices(indices: CubeIndices): Cube {
-		return indices.map((i) => this.pointCloud.marchableGrid[i]) as Cube;
+		return indices.map((i) => this.pointCloud.marchableGrid[i].binary) as Cube;
 	}
 
 	getVector3FromLocalCubeIndex(i: number) {
@@ -128,7 +129,7 @@ export default class MarchedMesh {
 			const hash = this.getCubeHash(...cube);
 			const lookup = TRIANGLE_TABLE[hash];
 
-			const map: Map<number, Map<number, boolean>> = new Map();
+			const map: Map<number, Map<number, number>> = new Map();
 
 			for (let triangle = 0; triangle < math.floor((lookup.size() - 1) / 3); triangle++) {
 				const index = 3 * triangle;
@@ -136,16 +137,28 @@ export default class MarchedMesh {
 				const vertices: Triangle = [Vector3.zero, Vector3.zero, Vector3.zero];
 				[index, index + 1, index + 2].forEach((edgeIndex, mapIndex) => {
 					const [v0, v1] = EDGE_VERTEX_INDICES[lookup[edgeIndex]];
+					const i0 = i + this.getGlobalCubeIndexFromVector3(this.getVector3FromLocalCubeIndex(v0));
+					const i1 = i + this.getGlobalCubeIndexFromVector3(this.getVector3FromLocalCubeIndex(v1));
 
-					const vertex = this.vertexIndexToPointCloudSpace(
-						i + this.getGlobalCubeIndexFromVector3(this.getVector3FromLocalCubeIndex(v0)),
-					).Lerp(
-						this.vertexIndexToPointCloudSpace(
-							i + this.getGlobalCubeIndexFromVector3(this.getVector3FromLocalCubeIndex(v1)),
-						),
-						0.5,
+					const t = inverseLerp(
+						this.pointCloud.sdf.getLastTolerance(),
+						this.pointCloud.marchableGrid[i0].float,
+						this.pointCloud.marchableGrid[i1].float,
 					);
-					vertexIds[mapIndex] = this.editableMesh.AddVertex(vertex.mul(this.pointCloud.getScale()));
+					const vertex = this.vertexIndexToPointCloudSpace(i0).Lerp(
+						this.vertexIndexToPointCloudSpace(i1),
+						math.clamp(t, 0, 1),
+					);
+					if (!map.get(i0) || map.get(i0)?.get(i1) === undefined) {
+						const vertexId = this.editableMesh.AddVertex(vertex.mul(this.pointCloud.getScale()));
+						vertexIds[mapIndex] = vertexId;
+						map.set(i0, new Map());
+						map.get(i0)?.set(i1, vertexId);
+						map.set(i1, new Map());
+						map.get(i1)?.set(i0, vertexId);
+					} else {
+						vertexIds[mapIndex] = map.get(i0)!.get(i1)!;
+					}
 					vertices[mapIndex] = vertex;
 				});
 				// this.triangles.push(vertices);
