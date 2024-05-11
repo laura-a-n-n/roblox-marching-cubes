@@ -15,5 +15,6 @@ function sdTorus(p: Vector3, t: Vector2): number {
 const sdf = new SignedDistanceFunction((p: Vector3) => sdTorus(p, new Vector2(0.3, 0.15))); //(v: Vector3) => v.Magnitude - 0.5);
 const pointCloud = new PointCloud(sdf);
 const marchedMesh = new MarchedMesh(pointCloud);
+// pointCloud.render();
 pointCloud.sampleGrid();
 marchedMesh.render();

@@ -175,11 +175,11 @@ export default class MarchedMesh {
 			// const pointCloud = new PointCloud(this.pointCloud.sdf);
 			// pointCloud.setAtomColor(new BrickColor("Hot pink"));
 			// pointCloud.setAtomTransparency(0.9);
-			// pointCloud.setPoints(this.vertices); //this.pointCloud.sdf.getVertexGrid());
+			// pointCloud.setPoints(this.pointCloud.sdf.getVertexGrid());
 			// pointCloud.setScale(this.pointCloud.getScale());
 			// pointCloud.drawAtoms();
 			// pointCloud.render();
-			// this.pointCloud.setPoints(this.vertices);
+			// // this.pointCloud.setPoints(this.vertices);
 			// this.pointCloud.setScale(16);
 			// this.pointCloud.drawAtoms();
 			// this.pointCloud.render();
