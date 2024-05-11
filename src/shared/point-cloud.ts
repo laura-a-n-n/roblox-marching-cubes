@@ -4,7 +4,7 @@ export class PointCloud {
 	public model: Model;
 	public points: Vector3[] = [];
 	public marchableGrid: { binary: 0 | 1; float: number }[] = [];
-	private resolution = 32;
+	private resolution = 48;
 	private scale = 32;
 	private atomColor: BrickColor = new BrickColor("Really black");
 	private atomTransparency = 0;

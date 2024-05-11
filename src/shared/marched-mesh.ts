@@ -19,8 +19,10 @@ export default class MarchedMesh {
 	) {
 		if (!meshPart) {
 			meshPart = new Instance("MeshPart");
-			meshPart.Position = new Vector3(0, 10, 0);
 			meshPart.Size = Vector3.one;
+			meshPart.Anchored = true;
+			meshPart.CanCollide = true;
+			meshPart.CFrame = new CFrame();
 		}
 		this.meshPart = meshPart;
 		this.editableMesh = this.resetEditableMesh();

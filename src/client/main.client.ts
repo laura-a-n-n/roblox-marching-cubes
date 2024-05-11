@@ -4,6 +4,7 @@ import SimpleUVSplatter from "shared/naive-uv-splatter";
 import { PointCloud } from "shared/point-cloud";
 import { getSimpleRays, getUVCoords, renderRaysDebug } from "shared/rays";
 import { SignedDistanceFunction } from "shared/sdf";
+import UVPainterTool from "shared/uv-painter";
 
 // const uvs = getUVCoords(6, 6);
 // const origin = new Vector3(0, 5, 0);
@@ -31,7 +32,7 @@ function sdOctahedron(p: Vector3, s: number): number {
 }
 const octahedronPrefab = (p: Vector3) => sdOctahedron(p, 0.5);
 
-const sdf = new SignedDistanceFunction(octahedronPrefab);
+const sdf = new SignedDistanceFunction(torusPrefab);
 const pointCloud = new PointCloud(sdf);
 const marchedMesh = new MarchedMesh(pointCloud);
 // pointCloud.render();
@@ -40,3 +41,6 @@ marchedMesh.render();
 // SimpleUVSplatter.simpleRotationTest();
 SimpleUVSplatter.splatMesh(marchedMesh.editableMesh);
 parentRandomColors(marchedMesh.meshPart);
+
+// const Players = game.GetService("Players");
+// new UVPainterTool(Players.LocalPlayer, game.Workspace.CurrentCamera!, marchedMesh.meshPart, marchedMesh.editableMesh);
