@@ -1,15 +1,13 @@
 {
-	"name": "sdf",
+	"name": "editable-mesh-library",
 	"version": "1.0.0",
-	"description": "",
+	"description": "A Roblox library for SDFs, marching cubes, textures, and maybe more",
 	"main": "index.js",
 	"scripts": {
 		"build": "rbxtsc",
 		"watch": "rbxtsc -w",
 		"serve": "rojo serve"
 	},
-	"keywords": [],
-	"author": "",
 	"license": "ISC",
 	"devDependencies": {
 		"@rbxts/compiler-types": "^2.3.0-types.1",
