@@ -1,6 +1,6 @@
-import { EDGE_VERTEX_INDICES, TRIANGLE_TABLE } from "shared/marching-cubes";
-import { PointCloud } from "shared/point-cloud";
-import { inverseLerp } from "shared/utils";
+import { EDGE_VERTEX_INDICES, TRIANGLE_TABLE } from "shared/marching-cubes/lookup-tables";
+import { PointCloud } from "shared/core/point-cloud";
+import { inverseLerp } from "shared/core/utils";
 
 export type Triangle = [Vector3, Vector3, Vector3];
 export type TriangleIndices = [number, number, number];

@@ -1,4 +1,4 @@
-import { SignedDistanceFunction } from "shared/sdf";
+import { SignedDistanceFunction } from "shared/core/sdf";
 
 export class PointCloud {
 	public model: Model;

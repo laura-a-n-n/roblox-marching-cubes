@@ -1,6 +1,26 @@
-export type SDFDefinition = (vector: Vector3) => number;
+/**
+ * A type designated for 3D signed distance functions.
+ * @param vector the point whose signed distance should be evaluated
+ * @param params optional params that control the SDF output
+ * @returns signed distance of the point from the boundary of a surface
+ * @see SignedDistanceFunction
+ */
+export type SDFDefinition = (vector: Vector3, ...params: number[]) => number;
 
+/**
+ * A signed distance function tells how far away
+ * a point is from the boundary of some surface.
+ * What makes it *signed* is that it doesn't always
+ * return a positive number, it returns a negative number
+ * whenever the point is inside of the surface.
+ * @see https://en.wikipedia.org/wiki/Signed_distance_function
+ * @module
+ */
 export class SignedDistanceFunction {
+	/**
+	 * The particular signed distance function to use.
+	 * For examples, see sdf-lib.ts.
+	 */
 	public forward: SDFDefinition;
 	private marchableGrid: { binary: 0 | 1; float: number }[] = [];
 	private vertexGrid: Vector3[] = [];

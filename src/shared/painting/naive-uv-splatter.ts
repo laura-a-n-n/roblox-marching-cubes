@@ -1,5 +1,5 @@
-import { PointCloud } from "shared/point-cloud";
-import { projectXY } from "shared/utils";
+import { PointCloud } from "shared/core/point-cloud";
+import { projectXY } from "shared/core/utils";
 
 /**
  * Unwraps a mesh by just splatting the damn thing
@@ -14,7 +14,7 @@ export default class SimpleUVSplatter {
 
 		const triangleData = new Map<number, Map<number, Vector2>>();
 		let totalWidth = 0;
-		let totalHeight = 0; // unused as of now.
+		let totalHeight = 0;
 		let maxHeight = 0;
 
 		for (const triangleId of triangles) {
