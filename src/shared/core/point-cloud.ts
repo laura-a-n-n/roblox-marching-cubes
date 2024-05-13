@@ -1,9 +1,9 @@
-import { SignedDistanceFunction } from "shared/core/sdf";
+import { MarchableGrid, SDFPointData, SignedDistanceFunction } from "shared/core/sdf";
 
 export class PointCloud {
 	public model: Model;
 	public points: Vector3[] = [];
-	public marchableGrid: { binary: 0 | 1; float: number }[] = [];
+	public marchableGrid: MarchableGrid = [];
 	private resolution = 48;
 	private scale = 32;
 	private atomColor: BrickColor = new BrickColor("Really black");
@@ -46,7 +46,7 @@ export class PointCloud {
 		if (!this.sdf) {
 			throw error("SDF needs to be defined to use sampleGrid");
 		}
-		const points = this.sdf.sampleGrid(Vector3.one.mul(resolution));
+		const points = this.sdf.sampleGrid(resolution);
 		this.points = points;
 		this.marchableGrid = this.sdf.getMarchableGrid();
 		this.resolution = resolution;

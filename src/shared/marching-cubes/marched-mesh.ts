@@ -74,7 +74,7 @@ export default class MarchedMesh {
 	}
 
 	getCubeFromIndices(indices: CubeIndices): Cube {
-		return indices.map((i) => this.pointCloud.marchableGrid[i].binary) as Cube;
+		return indices.map((i) => this.pointCloud.marchableGrid[i].occupancy) as Cube;
 	}
 
 	getVector3FromLocalCubeIndex(i: number) {
@@ -103,7 +103,7 @@ export default class MarchedMesh {
 		// const latticePoint = this.vertexIndexToCubeSpace(i);
 		// const samplePoint = sdf.getSamplePoint(latticePoint, Vector3.one.mul(resolution));
 		// print(this.pointCloud.sdf.getVertexGrid().size(), i);
-		return this.pointCloud.sdf!.getVertexGrid()[i];
+		return this.pointCloud.sdf!.getMarchableGrid()[i].samplePoint;
 	}
 
 	private _vertexIndexToCubeSpace(i: number) {
@@ -141,9 +141,9 @@ export default class MarchedMesh {
 					const i1 = i + this.getGlobalCubeIndexFromVector3(this.getVector3FromLocalCubeIndex(v1));
 
 					const t = inverseLerp(
-						this.pointCloud.sdf!.getLastTolerance(),
-						this.pointCloud.marchableGrid[i0].float,
-						this.pointCloud.marchableGrid[i1].float,
+						this.pointCloud.sdf!.getLastSurfaceLevel(),
+						this.pointCloud.marchableGrid[i0].signedDistance,
+						this.pointCloud.marchableGrid[i1].signedDistance,
 					);
 					const vertex = this.vertexIndexToPointCloudSpace(i0).Lerp(
 						this.vertexIndexToPointCloudSpace(i1),

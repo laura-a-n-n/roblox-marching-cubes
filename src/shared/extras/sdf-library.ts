@@ -1,5 +1,3 @@
-import { SDFDefinition } from "shared/core/sdf";
-
 const Sphere = (v: Vector3, radius: number): number => v.Magnitude - radius;
 const Torus = (p: Vector3, tX: number, tY: number): number => {
 	const q: Vector2 = new Vector2(math.abs(p.mul(Vector3.xAxis.add(Vector3.zAxis)).Magnitude) - tX, p.Y);
