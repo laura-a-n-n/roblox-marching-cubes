@@ -51,6 +51,12 @@ export class SignedDistanceFunction {
 	 */
 	private surfaceLevel = 0.03;
 
+	/**
+	 * The last resolution used to sample a regular grid.
+	 * @see sampleGrid
+	 */
+	private gridResolution = 64;
+
 	public constructor(definition: SDFDefinition) {
 		this.forward = definition;
 	}
@@ -63,11 +69,12 @@ export class SignedDistanceFunction {
 	 * @param isosurface whether or not to just return points on the boundary, or all points inside
 	 * @param leftBottomBack the left, bottom, back corner of the cube
 	 * @param rightTopFront the right, top, front corner of the cube
-	 * @returns SDFPointData for each point in the grid
+	 * @returns array of converged points, but also populates
+	 * this.marchableGrid with SDFPointData for each point in the grid
 	 * @see SDFPointData
 	 */
 	public sampleGrid(
-		resolution: number,
+		resolution = 64,
 		tolerance = 0.03,
 		isosurface = true,
 		leftBottomBack?: Vector3,
@@ -77,7 +84,7 @@ export class SignedDistanceFunction {
 		rightTopFront ??= Vector3.one;
 
 		const gridSamples: Vector3[] = [];
-		this.marchableGrid = [];
+		const marchableGrid: MarchableGrid = [];
 		this.surfaceLevel = tolerance;
 
 		for (let x = 0; x < resolution; x++) {
@@ -90,10 +97,13 @@ export class SignedDistanceFunction {
 					if (converged) {
 						gridSamples.push(samplePoint);
 					}
-					this.marchableGrid.push({ occupancy: converged ? 1 : 0, signedDistance: distance, samplePoint });
+					marchableGrid.push({ occupancy: converged ? 1 : 0, signedDistance: distance, samplePoint });
 				}
 			}
 		}
+
+		this.marchableGrid = marchableGrid;
+		this.gridResolution = resolution;
 
 		return gridSamples;
 	}
@@ -121,7 +131,7 @@ export class SignedDistanceFunction {
 
 	public getMarchableGrid() {
 		if (this.marchableGrid.size() === 0) {
-			warn("getMarchableGrid was called, but the grid is empty. You may want to call sampleGrid first.");
+			this.sampleGrid();
 		}
 		return this.marchableGrid;
 	}
@@ -134,6 +144,15 @@ export class SignedDistanceFunction {
 	 */
 	public getLastSurfaceLevel() {
 		return this.surfaceLevel;
+	}
+
+	/**
+	 * @returns the last grid sampling resolution
+	 * @see gridResolution
+	 * @see sampleGrid
+	 */
+	public getLastGridResolution() {
+		return this.gridResolution;
 	}
 
 	public sampleRays() {

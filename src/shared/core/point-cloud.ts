@@ -1,15 +1,29 @@
-import { MarchableGrid, SDFPointData, SignedDistanceFunction } from "shared/core/sdf";
+import Object from "@rbxts/object-utils";
+import { MarchableGrid, SignedDistanceFunction } from "shared/core/sdf";
 
+/**
+ * A set of points in 3D space.
+ * The class has built-in tools for rendering point clouds
+ * with parts, although this can be very expensive for large
+ * clouds and may potentially cause game-crashing lag.
+ */
 export class PointCloud {
 	public model: Model;
 	public points: Vector3[] = [];
-	public marchableGrid: MarchableGrid = [];
-	private resolution = 48;
-	private scale = 32;
-	private atomColor: BrickColor = new BrickColor("Really black");
-	private atomTransparency = 0;
+	public scale = 32;
 
-	constructor(
+	public atomProperties = {
+		BrickColor: new BrickColor("Really black"),
+		Transparency: 0.5,
+		Shape: Enum.PartType.Ball,
+		Anchored: true,
+		CanCollide: false,
+		Size: Vector3.one.mul(0.25),
+		TopSurface: Enum.SurfaceType.Smooth,
+		BottomSurface: Enum.SurfaceType.Smooth,
+	} as const;
+
+	public constructor(
 		public sdf?: SignedDistanceFunction,
 		model?: Model,
 	) {
@@ -20,46 +34,40 @@ export class PointCloud {
 		this.model = model;
 	}
 
-	private newAtom(position: Vector3, size = 0.25) {
+	public render() {
+		if (this.points.size() === 0) {
+			return;
+		}
+		if (this.model.GetChildren().size() === 0) {
+			this.drawAtoms();
+		}
+		this.model.Parent = game.Workspace;
+	}
+
+	private newAtom(position: Vector3, options?: Partial<WritableInstanceProperties<Part>>) {
 		const atom = new Instance("Part");
-		atom.Size = Vector3.one.mul(size);
-		atom.Shape = Enum.PartType.Ball;
-		atom.Anchored = true;
-		atom.CanCollide = false;
+		Object.assign(this.atomProperties, options ?? {});
+		Object.assign(atom, this.atomProperties);
 		atom.Position = position;
-		atom.TopSurface = Enum.SurfaceType.Smooth;
-		atom.BottomSurface = Enum.SurfaceType.Smooth;
-		atom.BrickColor = this.atomColor;
-		atom.Transparency = this.atomTransparency;
 		atom.Parent = this.model;
 		return atom;
 	}
 
-	public drawAtoms() {
-		this.model.ClearAllChildren();
+	public drawAtoms(clear = true) {
+		if (clear) {
+			this.model.ClearAllChildren();
+		}
 		for (const point of this.points) {
 			this.newAtom(point.mul(this.scale));
 		}
 	}
 
-	public sampleGrid(resolution = this.resolution, scale = this.scale) {
-		if (!this.sdf) {
-			throw error("SDF needs to be defined to use sampleGrid");
-		}
-		const points = this.sdf.sampleGrid(resolution);
-		this.points = points;
-		this.marchableGrid = this.sdf.getMarchableGrid();
-		this.resolution = resolution;
-		this.scale = scale;
-		this.drawAtoms();
+	public overrideAtomProperties(properties: Partial<WritableInstanceProperties<Part>>) {
+		return Object.assign(this.atomProperties, properties);
 	}
 
 	public setPoints(points: Vector3[]) {
 		this.points = points;
-	}
-
-	public getResolution() {
-		return this.resolution;
 	}
 
 	public getScale() {
@@ -67,21 +75,7 @@ export class PointCloud {
 	}
 
 	public setScale(scale: number) {
+		// could maybe re-render here, but it'd be expensive
 		this.scale = scale;
-	}
-
-	public setAtomColor(color: BrickColor) {
-		this.atomColor = color;
-	}
-
-	public setAtomTransparency(atomTransparency: number) {
-		this.atomTransparency = atomTransparency;
-	}
-
-	public render() {
-		if (this.points.size() === 0) {
-			this.sampleGrid();
-		}
-		this.model.Parent = game.Workspace;
 	}
 }

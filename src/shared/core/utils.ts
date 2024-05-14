@@ -54,3 +54,16 @@ export function inverseLerp(value: number, a: number, b: number) {
 export function projectXY(v: Vector3): Vector2 {
 	return new Vector2(v.X, v.Y);
 }
+
+export function compute3DGradient(func: (v: Vector3) => number, x: number, y: number, z: number, h: number): Vector3 {
+	// Partial derivative with respect to x
+	const df_dx = (func(new Vector3(x + h, y, z)) - func(new Vector3(x - h, y, z))) / (2 * h);
+
+	// Partial derivative with respect to y
+	const df_dy = (func(new Vector3(x, y + h, z)) - func(new Vector3(x, y - h, z))) / (2 * h);
+
+	// Partial derivative with respect to z
+	const df_dz = (func(new Vector3(x, y, z + h)) - func(new Vector3(x, y, z - h))) / (2 * h);
+
+	return new Vector3(df_dx, df_dy, df_dz);
+}

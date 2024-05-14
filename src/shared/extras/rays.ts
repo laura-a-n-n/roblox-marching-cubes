@@ -1,3 +1,9 @@
+/**
+ * This module has some helper functions for generating
+ * rays, but it's not really in use right now.
+ * @module
+ */
+
 import { flatCartesianProduct, range } from "../core/utils";
 
 export const getUVCoords = (width: number, height: number) => {

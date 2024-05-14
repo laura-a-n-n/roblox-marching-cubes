@@ -1,21 +1,24 @@
-import { PointCloud } from "shared/core/point-cloud";
 import { projectXY } from "shared/core/utils";
 
 /**
- * Unwraps a mesh by just splatting the damn thing
- * in row-column fashion.
+ * This module does "UV unwrapping" except it doesn't care
+ * about preserving geometry, it just cuts out every
+ * triangle and splats it on the canvas.
  */
 export default class SimpleUVSplatter {
+	/**
+	 * Allows texturing of EditableMesh instances by
+	 * defining the UVs so that every triangle is
+	 * unoccluded and without distortion.
+	 */
 	public static splatMesh(mesh: EditableMesh) {
 		const triangles = mesh.GetTriangles();
-
-		print("We're gonna splat that damn mesh!");
-		print("Triangle count", triangles.size());
 
 		const triangleData = new Map<number, Map<number, Vector2>>();
 		let totalWidth = 0;
 		let totalHeight = 0;
 		let maxHeight = 0;
+		const padding = 4;
 
 		for (const triangleId of triangles) {
 			const [v0, v1, v2] = mesh.GetTriangleVertices(triangleId);
@@ -26,11 +29,7 @@ export default class SimpleUVSplatter {
 				// by transitivity we are parallel to the Z plane, so there isn't anything to be done
 			} else {
 				// let's rotate the triangle so it lies flat.
-				// first compute the angle of rotation
-				const [q0, q1] = p0.Z !== p1.Z ? [p0, p1] : [p0, p2];
-				const angle = new Vector2(q1.X, q1.Z).sub(new Vector2(q0.X, q0.Z)).Angle(Vector2.xAxis);
-				const matrix = CFrame.Angles(0, angle, 0);
-				[p0, p1, p2] = [matrix.mul(p0), matrix.mul(p1), matrix.mul(p2)];
+				[p0, p1, p2] = SimpleUVSplatter.rotateTriangleToXYPlane(p0, p1, p2);
 			}
 
 			// Perfect, now we can just ignore the Z axis
@@ -54,8 +53,8 @@ export default class SimpleUVSplatter {
 				]),
 			);
 
-			totalWidth += width;
-			totalHeight += height;
+			totalWidth += width + padding;
+			totalHeight += height + padding;
 			maxHeight = math.max(height, maxHeight);
 		}
 
@@ -69,27 +68,14 @@ export default class SimpleUVSplatter {
 		}
 	}
 
-	public static simpleRotationTest() {
-		const cloud = new PointCloud();
-		cloud.setPoints([new Vector3(1, 1, 1), new Vector3(4, 5, 6), new Vector3(2, 7, 4)]);
-
-		let [p0, p1, p2] = cloud.points;
-		const [q0, q1] = p0.Z !== p1.Z ? [p0, p1] : [p0, p2];
-		const angle = new Vector2(q1.X, q1.Z).sub(new Vector2(q0.X, q0.Z)).Angle(Vector2.xAxis);
-		const matrix = CFrame.Angles(0, angle, 0);
-		[p0, p1, p2] = [matrix.mul(p0), matrix.mul(p1), matrix.mul(p2)];
-
-		cloud.setAtomColor(BrickColor.Yellow());
-		cloud.setScale(1);
-		cloud.drawAtoms();
-		cloud.render();
-
-		task.wait(5);
-
-		cloud.setPoints([p0, p1, p2]);
-		cloud.setAtomColor(BrickColor.Yellow());
-		cloud.setScale(1);
-		cloud.drawAtoms();
-		cloud.render();
+	/**
+	 * This is only public so it can be tested.
+	 */
+	public static rotateTriangleToXYPlane(p0: Vector3, p1: Vector3, p2: Vector3) {
+		const p2subp0 = p2.sub(p0);
+		const q1 = Vector3.xAxis.mul(p1.sub(p0).Magnitude);
+		const q2x = p1.sub(p0).Dot(p2subp0) / q1.X;
+		const q2 = new Vector3(q2x, math.sqrt(math.pow(p2subp0.Magnitude, 2) - q2x * q2x), 0);
+		return [Vector3.zero, q1, q2];
 	}
 }
