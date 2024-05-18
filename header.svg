@@ -16,6 +16,7 @@
 					}
 
 					.warning-message p {
+						word-wrap: nowrap;
 						margin: 0;
 					}
 				}
