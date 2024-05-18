@@ -1,9 +1,10 @@
 https://github.com/laura-a-n-n/roblox-marching-cubes/assets/100505614/6889b647-8218-4ce5-b973-cbd5727e77bf
 
+<img src="header.svg" alt="Motion warning" />
 here's a roblox character for no reason
 
 ```stl
-solid 
+solid
 facet normal 0 -1 1.2749655e-07
  outer loop
   vertex 0.1284337 -0.4792192 1.9023614
@@ -7466,5 +7467,5 @@ facet normal -0.12936105 0.14646576 0.98072094
   vertex -0.12112641 0.25807118 5.068571
  endloop
 endfacet
-endsolid 
+endsolid
 ```
