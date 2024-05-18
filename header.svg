@@ -2,13 +2,6 @@
 	<foreignObject width="100%" height="100%">
 		<div xmlns="http://www.w3.org/1999/xhtml">
 			<style>
-				/* Default state: the message is hidden */
-				.warning-message {
-					display: none;
-				}
-
-				/* If the user prefers reduced motion, show the warning message */
-				@media (prefers-reduced-motion: reduce) {
 					.warning-message {
 						display: block;
 						background-color: #ffebcd;
