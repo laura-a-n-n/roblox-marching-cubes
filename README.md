@@ -1,3 +1,7 @@
+
+https://github.com/laura-a-n-n/roblox-marching-cubes/assets/100505614/6889b647-8218-4ce5-b973-cbd5727e77bf
+
+
 ```stl
 solid my_model  facet normal -25 -13 -14
     outer loop
