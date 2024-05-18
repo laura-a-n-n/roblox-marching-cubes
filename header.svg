@@ -8,8 +8,7 @@
 						border: 2px solid #ff4500;
 						border-radius: 10px;
 						padding: 20px;
-						margin: 20px auto;
-						max-width: 600px;
+						margin: 20px;
 						text-align: center;
 						font-family: 'Comic Sans MS', 'Comic Sans', cursive;
 						color: #ff4500;
