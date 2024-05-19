@@ -1,5 +1,5 @@
 import Object from "@rbxts/object-utils";
-import { SignedDistanceFunction } from "shared/core/sdf";
+import { SignedDistanceFunction } from "shared/geometry/core/sdf";
 
 export type PointArray = Array<Vector3>;
 

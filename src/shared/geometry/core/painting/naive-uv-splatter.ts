@@ -1,4 +1,4 @@
-import { projectXY } from "shared/core/utils";
+import { projectXY } from "shared/geometry/core/utils";
 
 /**
  * This module does "UV unwrapping" except it doesn't care

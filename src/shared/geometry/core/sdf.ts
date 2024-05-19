@@ -1,4 +1,4 @@
-import MarchedMesh, { MarchableGrid } from "shared/marching-cubes/marched-mesh";
+import MarchedMesh, { MarchableGrid } from "shared/geometry/core/marching-cubes/marched-mesh";
 
 /**
  * A type designated for 3D signed distance functions.

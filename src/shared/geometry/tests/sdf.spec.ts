@@ -1,7 +1,7 @@
 import Object from "@rbxts/object-utils";
-import { compute3DGradient } from "shared/core/utils";
-import { SDFLibrary } from "shared/extras/sdf-library";
-import { TestModule, TestingFramework } from "shared/tests/testing-framework";
+import { compute3DGradient } from "shared/geometry/core/utils";
+import { SDFLibrary } from "shared/geometry/extras/sdf-library";
+import { TestModule, TestingFramework } from "shared/geometry/tests/testing-framework";
 
 const random = new Random();
 

@@ -1,6 +1,6 @@
-import { EDGE_VERTEX_INDICES, TRIANGLE_TABLE } from "shared/marching-cubes/lookup-tables";
-import { inverseLerp } from "shared/core/utils";
-import { SignedDistanceFunction } from "shared/core/sdf";
+import { EDGE_VERTEX_INDICES, TRIANGLE_TABLE } from "shared/geometry/core/marching-cubes/lookup-tables";
+import { inverseLerp } from "shared/geometry/core/utils";
+import { SignedDistanceFunction } from "shared/geometry/core/sdf";
 import Object from "@rbxts/object-utils";
 
 export type Triangle = [Vector3, Vector3, Vector3];

@@ -1,6 +1,6 @@
-import { PointCloud } from "shared/core/point-cloud";
-import SimpleUVSplatter from "shared/painting/naive-uv-splatter";
-import { TestModule, TestingFramework } from "shared/tests/testing-framework";
+import { PointCloud } from "shared/geometry/core/point-cloud";
+import SimpleUVSplatter from "shared/geometry/core/painting/naive-uv-splatter";
+import { TestModule, TestingFramework } from "shared/geometry/tests/testing-framework";
 
 const UVMathTests: TestModule = {
 	uvSplatter: {

@@ -1,3 +1,3 @@
-import Examples from "shared/examples";
+import Examples from "shared/geometry/examples";
 
 Examples.Torus();

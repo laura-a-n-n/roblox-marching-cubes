@@ -1,9 +1,9 @@
-import MarchedMesh from "shared/marching-cubes/marched-mesh";
-import SimpleUVSplatter from "shared/painting/naive-uv-splatter";
-import { parentRandomColors } from "shared/painting/editable-image";
-import { SDFDefinition, SignedDistanceFunction } from "shared/core/sdf";
-import { SDFLibrary } from "shared/extras/sdf-library";
-import { PointCloud } from "shared/core/point-cloud";
+import MarchedMesh from "shared/geometry/core/marching-cubes/marched-mesh";
+import SimpleUVSplatter from "shared/geometry/core/painting/naive-uv-splatter";
+import { parentRandomColors } from "shared/geometry/core/painting/editable-image";
+import { SignedDistanceFunction } from "shared/geometry/core/sdf";
+import { SDFLibrary } from "shared/geometry/extras/sdf-library";
+import { PointCloud } from "shared/geometry/core/point-cloud";
 
 const Examples = {
 	Torus: () => {
