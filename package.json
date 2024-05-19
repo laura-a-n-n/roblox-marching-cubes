@@ -6,7 +6,8 @@
 	"scripts": {
 		"build": "rbxtsc",
 		"watch": "rbxtsc -w",
-		"serve": "rojo serve"
+		"serve": "rojo serve",
+		"docs": "typedoc"
 	},
 	"license": "ISC",
 	"devDependencies": {
@@ -21,6 +22,7 @@
 		"eslint-plugin-roblox-ts": "^0.0.36",
 		"prettier": "^3.2.5",
 		"roblox-ts": "^2.3.0",
+		"typedoc": "^0.25.13",
 		"typescript": "^5.4.5"
 	}
 }
