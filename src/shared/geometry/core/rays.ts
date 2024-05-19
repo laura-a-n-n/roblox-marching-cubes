@@ -4,7 +4,7 @@
  * @module
  */
 
-import { flatCartesianProduct, range } from "../core/utils";
+import { flatCartesianProduct, range } from "./utils";
 
 export const getUVCoords = (width: number, height: number) => {
 	const horizontalAxis = range(width).map((x) => x / width - 0.5);
