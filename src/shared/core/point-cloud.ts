@@ -1,5 +1,7 @@
 import Object from "@rbxts/object-utils";
-import { MarchableGrid, SignedDistanceFunction } from "shared/core/sdf";
+import { SignedDistanceFunction } from "shared/core/sdf";
+
+export type PointArray = Array<Vector3>;
 
 /**
  * A set of points in 3D space.
@@ -9,7 +11,7 @@ import { MarchableGrid, SignedDistanceFunction } from "shared/core/sdf";
  */
 export class PointCloud {
 	public model: Model;
-	public points: Vector3[] = [];
+	public points: PointArray = [];
 	public scale = 32;
 
 	public atomProperties = {
@@ -23,10 +25,7 @@ export class PointCloud {
 		BottomSurface: Enum.SurfaceType.Smooth,
 	} as const;
 
-	public constructor(
-		public sdf?: SignedDistanceFunction,
-		model?: Model,
-	) {
+	public constructor(model?: Model) {
 		if (!model) {
 			model = new Instance("Model");
 			model.Name = "PointCloud";

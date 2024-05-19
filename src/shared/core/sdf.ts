@@ -1,3 +1,5 @@
+import MarchedMesh, { MarchableGrid } from "shared/marching-cubes/marched-mesh";
+
 /**
  * A type designated for 3D signed distance functions.
  * @param vector the point whose signed distance should be evaluated
@@ -6,20 +8,6 @@
  * @see SignedDistanceFunction
  */
 export type SDFDefinition = (vector: Vector3, ...params: number[]) => number;
-
-/**
- * Extended return data for an SDF.
- * @remarks
- * - `occupancy` should be 0 if outside the boundary of the surface, 1 if inside.
- * - `signedDistance` is the signed distance of the point to the surface
- * - `sampledPoint` is the 3D coordinates of the point in question
- */
-export type SDFPointData = { occupancy: 0 | 1; signedDistance: number; samplePoint: Vector3 };
-
-/**
- * Data of a regular grid, ready for polygonization with marching cubes.
- */
-export type MarchableGrid = SDFPointData[];
 
 /**
  * A signed distance function tells how far away
@@ -42,7 +30,7 @@ export class SignedDistanceFunction {
 	 * The last marchable grid computed is stored here.
 	 * @see sampleGrid
 	 */
-	private marchableGrid: MarchableGrid = [];
+	private marchableGrid?: MarchableGrid;
 
 	/**
 	 * The last surface level (or "tolerance") that was used to determine occupancy.
@@ -63,28 +51,29 @@ export class SignedDistanceFunction {
 
 	/**
 	 * Given some resolution, sample a cube of grid points
-	 * and return SDFPointData for each point.
+	 * and return MarchablePointData for each point.
 	 * @param resolution how many points to sample along each axis
 	 * @param tolerance the surface level to use (see the surfaceLevel property)
 	 * @param isosurface whether or not to just return points on the boundary, or all points inside
 	 * @param leftBottomBack the left, bottom, back corner of the cube
 	 * @param rightTopFront the right, top, front corner of the cube
-	 * @returns array of converged points, but also populates
-	 * this.marchableGrid with SDFPointData for each point in the grid
-	 * @see SDFPointData
+	 * @returns object of both an array of converged points, as well as
+	 * this.marchableGrid with MarchablePointData for each point in the grid
+	 * @see MarchablePointData
 	 */
 	public sampleGrid(
-		resolution = 64,
+		resolution?: number,
 		tolerance = 0.03,
 		isosurface = true,
 		leftBottomBack?: Vector3,
 		rightTopFront?: Vector3,
 	) {
+		resolution ??= this.gridResolution;
 		leftBottomBack ??= Vector3.one.mul(-1);
 		rightTopFront ??= Vector3.one;
 
-		const gridSamples: Vector3[] = [];
-		const marchableGrid: MarchableGrid = [];
+		const convergedPoints: Vector3[] = [];
+		const marchableGrid: MarchableGrid = MarchedMesh.getEmptyMarchableGrid(tolerance);
 		this.surfaceLevel = tolerance;
 
 		for (let x = 0; x < resolution; x++) {
@@ -95,9 +84,9 @@ export class SignedDistanceFunction {
 					const distance = this.forward(samplePoint);
 					const converged = (isosurface ? math.abs(distance) : distance) <= tolerance;
 					if (converged) {
-						gridSamples.push(samplePoint);
+						convergedPoints.push(samplePoint);
 					}
-					marchableGrid.push({ occupancy: converged ? 1 : 0, signedDistance: distance, samplePoint });
+					marchableGrid.push({ occupancy: converged ? 1 : 0, value: distance, samplePoint });
 				}
 			}
 		}
@@ -105,7 +94,7 @@ export class SignedDistanceFunction {
 		this.marchableGrid = marchableGrid;
 		this.gridResolution = resolution;
 
-		return gridSamples;
+		return { convergedPoints, marchableGrid };
 	}
 
 	/**
@@ -129,11 +118,20 @@ export class SignedDistanceFunction {
 		);
 	}
 
-	public getMarchableGrid() {
-		if (this.marchableGrid.size() === 0) {
+	/**
+	 * Returns the last marchable grid, or a new one if not defined.
+	 * @param
+	 */
+	public getLastMarchableGrid() {
+		if (this.marchableGrid?.size() === 0) {
 			this.sampleGrid();
 		}
 		return this.marchableGrid;
+	}
+
+	public toMarchableGrid(resolution?: number) {
+		this.sampleGrid(resolution);
+		return this.marchableGrid as MarchableGrid;
 	}
 
 	/**
@@ -156,7 +154,7 @@ export class SignedDistanceFunction {
 	}
 
 	public sampleRays() {
-		throw error("sampleRays is not yet implemented");
+		error("sampleRays is not yet implemented");
 	}
 
 	/**

@@ -1,19 +1,35 @@
 import { EDGE_VERTEX_INDICES, TRIANGLE_TABLE } from "shared/marching-cubes/lookup-tables";
 import { inverseLerp } from "shared/core/utils";
 import { SignedDistanceFunction } from "shared/core/sdf";
+import Object from "@rbxts/object-utils";
 
 export type Triangle = [Vector3, Vector3, Vector3];
 export type TriangleIndices = [number, number, number];
 export type Cube = [0 | 1, 0 | 1, 0 | 1, 0 | 1, 0 | 1, 0 | 1, 0 | 1, 0 | 1];
 export type CubeIndices = [number, number, number, number, number, number, number, number];
 
+/**
+ * The data of a point in a marchable grid.
+ * @remarks
+ * - `occupancy` should be 0 if outside the boundary of the surface, 1 if inside
+ * - `value` is a scalar used for interpolation, e.g. the signed distance of the point to the surface
+ * - `sampledPoint` is the 3D coordinates of the point in question
+ */
+export type MarchablePointData = { occupancy: 0 | 1; value: number; samplePoint: Vector3 };
+
+/**
+ * Data of a regular grid, ready for polygonization with marching cubes.
+ */
+export type MarchableGrid = Array<MarchablePointData> & { surfaceLevel: number };
+
 export default class MarchedMesh {
+	private marchableGrid: MarchableGrid | undefined;
 	public meshPart: MeshPart;
 	public editableMesh: EditableMesh;
 	public scale = 32;
 
 	public constructor(
-		public sdf: SignedDistanceFunction,
+		marchableGrid: MarchableGrid,
 		meshPart?: MeshPart,
 		public meshPartParent?: Instance,
 	) {
@@ -22,11 +38,32 @@ export default class MarchedMesh {
 			meshPart.Position = new Vector3(0, 10, 0);
 			meshPart.Size = Vector3.one;
 		}
+		this.marchableGrid = marchableGrid;
 		this.meshPart = meshPart;
 		this.editableMesh = this.resetEditableMesh();
 	}
 
-	public render() {
+	public static getEmptyMarchableGrid(tolerance: number) {
+		return Object.assign(new Array<MarchablePointData>(), {
+			surfaceLevel: tolerance,
+		});
+	}
+
+	public getGridResolution() {
+		const grid = this.getGridOrThrow();
+		return math.round(math.pow(grid.size(), 1 / 3));
+	}
+
+	public getCurrentMarchableGrid() {
+		return this.marchableGrid;
+	}
+
+	public setMarchableGrid(grid: MarchableGrid) {
+		this.marchableGrid = grid;
+	}
+
+	public render(grid?: MarchableGrid) {
+		this.marchableGrid ??= grid ?? this.getGridOrThrow();
 		if (this.editableMesh.GetTriangles().size() === 0) {
 			this.march();
 		}
@@ -45,7 +82,7 @@ export default class MarchedMesh {
 
 	public getCubeHash(...args: Cube) {
 		if (args.size() !== 8) {
-			throw error(`getCubeHash requires eight vertices, but you provided ${args.size()}`);
+			error(`getCubeHash requires eight vertices, but you provided ${args.size()}`);
 		}
 		let key = 0;
 		for (let i = 7; i >= 0; i--) {
@@ -56,7 +93,7 @@ export default class MarchedMesh {
 	}
 
 	public getCubeIndicesFromCornerIndex(i: number): CubeIndices | [] {
-		const resolution = this.sdf.getLastGridResolution();
+		const resolution = this.getGridResolution();
 		const z = 1;
 		const y = resolution;
 		const x = resolution * resolution;
@@ -81,13 +118,14 @@ export default class MarchedMesh {
 	}
 
 	public getCubeFromIndices(indices: CubeIndices): Cube {
-		const grid = this.sdf.getMarchableGrid();
-		return indices.map((i) => grid[i].occupancy) as Cube;
+		return indices.map((i) => {
+			return this.getGridOrThrow()[i].occupancy;
+		}) as Cube;
 	}
 
 	public latticePointFromLocalCubeIndex(i: number) {
 		if (i < 0 || i > 7) {
-			throw error("i must be a local cube index.");
+			error("i must be a local cube index.");
 		}
 		return new Vector3(
 			bit32.arshift(bit32.band(i, 1), 0),
@@ -97,7 +135,7 @@ export default class MarchedMesh {
 	}
 
 	public gridIndexFromLatticePoint(v: Vector3) {
-		const resolution = this.sdf.getLastGridResolution();
+		const resolution = this.getGridResolution();
 		let result = v.X * resolution;
 		result += v.Y;
 		result *= resolution;
@@ -110,11 +148,11 @@ export default class MarchedMesh {
 	}
 
 	public vertexIndexToWorldPosition(i: number) {
-		return this.sdf.getMarchableGrid()[i].samplePoint;
+		return this.getGridOrThrow()[i].samplePoint;
 	}
 
 	public vertexIndexToLatticePoint(i: number) {
-		const resolution = this.sdf.getLastGridResolution();
+		const resolution = this.getGridResolution();
 		const z = i % resolution;
 		const temp = (i - z) / resolution;
 		const y = temp % resolution;
@@ -123,8 +161,8 @@ export default class MarchedMesh {
 	}
 
 	march() {
-		const marchableGrid = this.sdf.getMarchableGrid();
-		const resolution = this.sdf.getLastGridResolution();
+		const resolution = this.getGridResolution();
+		const marchableGrid = this.marchableGrid as MarchableGrid;
 
 		if (resolution === 0) {
 			warn("Cannot march a point cloud without any points. That's just a cloud");
@@ -150,9 +188,9 @@ export default class MarchedMesh {
 					const index0 = gridIndex + this.gridIndexFromLocalCubeIndex(vertex0);
 					const index1 = gridIndex + this.gridIndexFromLocalCubeIndex(vertex1);
 					const interpolation = inverseLerp(
-						this.sdf.getLastSurfaceLevel(),
-						marchableGrid[index0].signedDistance,
-						marchableGrid[index1].signedDistance,
+						marchableGrid.surfaceLevel ?? 0,
+						marchableGrid[index0].value,
+						marchableGrid[index1].value,
 					);
 					const vertex = this.vertexIndexToWorldPosition(index0).Lerp(
 						this.vertexIndexToWorldPosition(index1),
@@ -173,10 +211,7 @@ export default class MarchedMesh {
 					} else {
 						vertexIds[mapIndex] = map.get(index0)!.get(index1)!;
 					}
-					// vertices[mapIndex] = vertex;
 				});
-				// this.triangles.push(vertices);
-				// this.vertices.push(vertices[0], vertices[1], vertices[2]);
 				this.editableMesh.AddTriangle(...vertexIds);
 			}
 		}
@@ -188,5 +223,12 @@ export default class MarchedMesh {
 
 	public setScale(scale: number) {
 		this.scale = scale;
+	}
+
+	private getGridOrThrow() {
+		if (!this.marchableGrid) {
+			error("A marchable grid was not provided!");
+		}
+		return this.marchableGrid;
 	}
 }
