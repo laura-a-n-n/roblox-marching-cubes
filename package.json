@@ -1,6 +1,6 @@
 {
-	"name": "editable-mesh-library",
-	"version": "1.0.0",
+	"name": "geometry-library",
+	"version": "0.0.1",
 	"description": "A Roblox library for SDFs, marching cubes, textures, and maybe more",
 	"main": "index.js",
 	"scripts": {
