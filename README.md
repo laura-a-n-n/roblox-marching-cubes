@@ -1,3 +1,5 @@
+[caution, video is a little flashy and spins]
+
 https://github.com/laura-a-n-n/roblox-marching-cubes/assets/100505614/6889b647-8218-4ce5-b973-cbd5727e77bf
 
 <img src="header.svg" alt="Motion warning" />
