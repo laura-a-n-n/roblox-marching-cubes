@@ -1,0 +1,23 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Roblox-TS Build",
+			"type": "npm",
+			"script": "watch",
+			"icon": { "id": "watch", "color": "terminal.ansiYellow" }
+		},
+		{
+			"label": "Rojo Server",
+			"type": "npm",
+			"script": "serve",
+			"icon": { "id": "edit", "color": "terminal.ansiRed" }
+		},
+		{
+			"label": "Develop",
+			"icon": { "id": "globe", "color": "terminal.ansiMagenta" },
+			"dependsOrder": "parallel",
+			"dependsOn": ["Roblox-TS Build", "Rojo Server"]
+		}
+	]
+}
